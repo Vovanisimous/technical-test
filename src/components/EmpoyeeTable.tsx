@@ -1,5 +1,5 @@
 import React from "react";
-import {makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@material-ui/core";
+import {makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, List, ListItem} from "@material-ui/core";
 import {IUseEmployee, useEmployee} from "../hooks/EmployeeHook";
 import { useEffect } from "react";
 
@@ -33,17 +33,18 @@ const useStyles = makeStyles((theme) => ({
     button: {
         margin: 10,
     },
-    expand: {
-        transform: "rotate(0deg)",
-        marginLeft: "auto",
-        transition: theme.transitions.create("transform", {
-            duration: theme.transitions.duration.shortest,
-        }),
+    collegesList: {
+        width: '100%',
+        maxWidth: 360,
+        position: 'relative',
+        overflow: 'auto',
+        maxHeight: 50,
     },
-    expandOpen: {
-        transform: "rotate(180deg)",
-    },
+    collegesListItem: {
+        padding: 0
+    }
 }));
+
 
 export const EmployeeTable = (props: {employeeHook: IUseEmployee}) => {
     const classes = useStyles();
@@ -87,19 +88,26 @@ export const EmployeeTable = (props: {employeeHook: IUseEmployee}) => {
                                     {employee.position}
                                 </TableCell>
                                 <TableCell component={'th'} scope={'row'}>
-                                    {employee.birthdate.getDate()}
+                                    {employee.birthdate}
                                 </TableCell>
                                 <TableCell component={'th'} scope={'row'}>
-                                    {employee.gender}
+                                    {employee.gender ? "Женский" : "Мужской"}
                                 </TableCell>
                                 <TableCell component={'th'} scope={'row'}>
-                                    {employee.employmentDate.getDate()}
+                                    {employee.employmentDate}
                                 </TableCell>
                                 <TableCell component={'th'} scope={'row'}>
-                                    {employee.dateOfDismissal.getDate()}
+                                    {employee.dateOfDismissal}
                                 </TableCell>
                                 <TableCell component={'th'} scope={'row'}>
-                                    {employee.drivingLicense}
+                                    {employee.drivingLicense ? "Да" : "Нет"}
+                                </TableCell>
+                                <TableCell component={'th'} scope={'row'}>
+                                    <List className={classes.collegesList}>
+                                        {employee.colleges && employee.colleges.map((item) => (
+                                            <ListItem className={classes.collegesListItem}>{item.lastname}</ListItem>
+                                        ))}
+                                    </List>
                                 </TableCell>
                             </TableRow>
                         ))}
