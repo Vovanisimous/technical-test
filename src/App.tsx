@@ -1,7 +1,7 @@
 import React from 'react';
 import {EmployeeTable} from "./components/EmpoyeeTable";
 import {makeStyles} from "@material-ui/core";
-import {AddEmployee} from "./components/AddEmployee/AddEmployee";
+import {AddEmployee} from "./components/AddEmployee";
 import { useEmployee } from './hooks/EmployeeHook';
 
 const useStyles = makeStyles((theme) => ({

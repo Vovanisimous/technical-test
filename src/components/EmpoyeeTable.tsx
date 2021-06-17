@@ -1,7 +1,9 @@
 import React from "react";
 import {makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, List, ListItem} from "@material-ui/core";
-import {IUseEmployee, useEmployee} from "../hooks/EmployeeHook";
+import {IUseEmployee} from "../hooks/EmployeeHook";
 import { useEffect } from "react";
+import {SetEmployee} from "./SetEmployee"
+import { DeleteEmployee } from "./DeleteEmployee";
 
 const useStyles = makeStyles((theme) => ({
     mainContainer: {
@@ -48,11 +50,7 @@ const useStyles = makeStyles((theme) => ({
 
 export const EmployeeTable = (props: {employeeHook: IUseEmployee}) => {
     const classes = useStyles();
-    const {employees, deleteEmployee, getEmployee} = props.employeeHook;
-
-    useEffect(() => {
-        console.log(employees)
-    }, [employees])
+    const {employees, deleteEmployee, setEmployee} = props.employeeHook;
 
     return (
         <div className={classes.mainContainer}>
@@ -70,10 +68,11 @@ export const EmployeeTable = (props: {employeeHook: IUseEmployee}) => {
                             <TableCell>Дата увольнения</TableCell>
                             <TableCell>Наличие прав</TableCell>
                             <TableCell>Коллеги</TableCell>
+                            <TableCell>Управление</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {employees.map((employee) => (
+                        {employees.map((employee, index) => (
                             <TableRow key={employee.id}>
                                 <TableCell component={'th'} scope={'row'}>
                                     {employee.lastname}
@@ -108,6 +107,10 @@ export const EmployeeTable = (props: {employeeHook: IUseEmployee}) => {
                                             <ListItem className={classes.collegesListItem}>{item.lastname}</ListItem>
                                         ))}
                                     </List>
+                                </TableCell>
+                                <TableCell component={'th'} scope={'row'}>
+                                    <SetEmployee employeeHook={props.employeeHook} index={index}/>
+                                    <DeleteEmployee employeeHook={props.employeeHook} index={index}/>
                                 </TableCell>
                             </TableRow>
                         ))}

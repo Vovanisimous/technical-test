@@ -1,26 +1,10 @@
 import React, {useState} from "react";
-import {IUseEmployee} from "../../hooks/EmployeeHook";
-import {Button, Dialog, DialogTitle, DialogContent, Grid, GridSize, makeStyles, MenuItem, Paper} from "@material-ui/core";
+import {Button, Dialog, DialogTitle, DialogContent, Grid, GridSize, Paper} from "@material-ui/core";
 import { Form } from 'react-final-form'
 import {ICreateEmployeeParams} from "../../interface/Employee";
 import {formFields} from "./formFields"
-
-const useStyles = makeStyles((theme) => ({
-    card: {
-        width: 700,
-        padding: 30,
-        margin: 10,
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    textField: {
-        marginLeft: theme.spacing(1),
-        marginRight: theme.spacing(1),
-        width: 200,
-    }
-}))
+import {IEmployee} from "../../interface/Employee"
+import { useEffect } from "react";
 
 const validate = (values: ICreateEmployeeParams) => {
     const errors: any = {}
@@ -51,47 +35,47 @@ const validate = (values: ICreateEmployeeParams) => {
     return errors;
 };
 
-export const AddEmployee = (props: {employeeHook: IUseEmployee}) => {
-    const classes = useStyles();
-    const [dialogOpen, setDialopOpen] = useState(false);
+export const EmployeeDialog = (
+    props: {
+        employees: IEmployee[], 
+        dialogOpen: boolean, 
+        handleDialog: (state: "open" | "close") => void, 
+        onSubmit: (params: ICreateEmployeeParams) => void,
+        employee?: IEmployee
+    }) => {
 
-    const handleDialog = (state: "open" | "close") => {
-        switch (state){
-            case "open":
-                setDialopOpen(true);
-                break;
-            case "close":
-                setDialopOpen(false);
-                break;
-        }      
-    }
-
-    const onSubmit = (params: ICreateEmployeeParams) => {
-        console.log(params);
-        props.employeeHook.createEmployee(params)
+    const {employees, dialogOpen, handleDialog, onSubmit, employee} = props;
+    
+    const paramEmployess = [...employees]
+    if (employee) {
+        const index = paramEmployess.findIndex(item => item.id === employee.id)
+        paramEmployess.splice(index, 1)
     }
 
     return (
-        <div className={classes.card}>
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={() => handleDialog("open")}
-            >
-                Добавить сотрудника
-            </Button>
-            <Dialog disableBackdropClick disableEscapeKeyDown open={dialogOpen} onClose={() => handleDialog("close")}>
+        <Dialog disableBackdropClick disableEscapeKeyDown open={dialogOpen} onClose={() => handleDialog("close")}>
                 <DialogTitle>Заполните форму</DialogTitle>
                 <DialogContent>
                     <Form
                         onSubmit={(params) => {onSubmit(params)}}
-                        initialValues={{ employed: true, stooge: 'larry' }}
+                        initialValues={{
+                            lastname: employee ? employee?.lastname : '',
+                            firstname: employee ? employee?.firstname : '',
+                            patronymic: employee ? employee?.patronymic : '',
+                            position: employee ? employee?.position : '',
+                            birthdate: employee ? employee?.birthdate : new Date(),
+                            gender: employee ? employee?.gender.toString() : '',
+                            employmentDate: employee ? employee?.employmentDate : new Date(),
+                            dateOfDismissal: employee ? employee?.dateOfDismissal : new Date(),
+                            drivingLicense: employee ? employee?.drivingLicense : false,
+                            colleges: employee ? employee?.colleges : []
+                        }}
                         validate={validate}
                         render={({ handleSubmit, form, submitting, pristine, values }) => (
                             <form onSubmit={handleSubmit} noValidate>
                                 <Paper style={{ padding: 16 }}>
                                     <Grid container alignItems="flex-start" spacing={2}>
-                                        {formFields(props.employeeHook.employees).map((item, idx) => (
+                                        {formFields(paramEmployess).map((item, idx) => (
                                             <Grid item xs={item.size as GridSize} key={idx}>
                                                 {item.field}
                                             </Grid>
@@ -122,6 +106,5 @@ export const AddEmployee = (props: {employeeHook: IUseEmployee}) => {
                     />
                 </DialogContent>
             </Dialog>
-        </div>
     )
 }

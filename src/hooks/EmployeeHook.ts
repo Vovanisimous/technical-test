@@ -5,8 +5,8 @@ import { ICreateEmployeeParams } from "../interface/Employee";
 
 export interface IUseEmployee {
     employees: IEmployee[];
-    getEmployee: (employeeId: string) => IEmployee | undefined;
-    deleteEmployee: (employeeId: string) => void;
+    setEmployee: (employeeIndex: number, params: ICreateEmployeeParams) => void;
+    deleteEmployee: (employeeIndex: number) => void;
     createEmployee: (params: ICreateEmployeeParams) => IEmployee[]
 }
 
@@ -16,22 +16,39 @@ export const useEmployee = (): IUseEmployee => {
     const findColleges = (collegeIds: string[] | undefined): IEmployee[] => {
         if (!collegeIds) return [];
 
-        return employees.map((item) => {
+        const checkEmployess = [...employees]
+
+        return checkEmployess.filter((item) => {
             if (collegeIds.includes(item.id)) {
-                return item
+                return true
             }
-        }) as IEmployee[]
+            return false
+        })
     }
 
-    const getEmployee = (employeeId: string) => {
-        return employees.find((item) => item.id === employeeId)
+    const setEmployee = (employeeIndex: number, params: ICreateEmployeeParams) => {
+        console.log(params)
+        const newEmployees = [...employees]
+
+        const newEmployee: IEmployee = {
+            ...employees[employeeIndex],
+            ...params,
+            gender: Number(params.gender),
+            birthdate: typeof params.birthdate === "object" ? params.birthdate.toLocaleDateString() : params.birthdate,
+            dateOfDismissal: typeof params.dateOfDismissal === "object" ? params.dateOfDismissal.toLocaleDateString():  params.dateOfDismissal,
+            employmentDate: typeof params.employmentDate === "object" ? params.employmentDate.toLocaleDateString(): params.employmentDate,
+            colleges: findColleges(params.colleges)
+        };
+
+        newEmployees[employeeIndex] = newEmployee
+
+        setEmployees(newEmployees)
     }
 
-    const deleteEmployee = (employeeId: string) => {
+    const deleteEmployee = (employeeIndex: number) => {
+        const newEmployees = [...employees]
 
-        const index = employees.findIndex(item => item.id === employeeId)
-
-        const newEmployees = employees.splice(index, 1);
+        newEmployees.splice(employeeIndex, 1);
 
         setEmployees(newEmployees)
     }
@@ -53,5 +70,5 @@ export const useEmployee = (): IUseEmployee => {
         return employees
     }
 
-    return {employees, getEmployee, deleteEmployee, createEmployee}
+    return {employees, setEmployee, deleteEmployee, createEmployee}
 }
